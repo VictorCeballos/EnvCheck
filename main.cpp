@@ -10,8 +10,8 @@ int main(int argc, char **argv)
     cout << "Hello World!" << endl;
     TestOpenCL::execute(argc, argv);
     TestCUDA::simple();
-    TestCUDA::execute(argc, argv);
-    TestCUDA::execute2(argc, argv);
+    TestCUDA::deviceQuery(argc, argv);
+    TestCUDA::deviceQueryDriver(argc, argv);
     TestOpenGL::execute(argc, argv);
     return 0;
 }

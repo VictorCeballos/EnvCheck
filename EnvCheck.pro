@@ -17,13 +17,17 @@ CONFIG -= app_bundle
 # Qt
 QT += core gui opengl
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-QMAKE_CXXFLAGS_RELEASE = -O3
+DEFINES += QT_DEPRECATED_WARNINGS
+
+# C++ flags
+QMAKE_CXXFLAGS_RELEASE =-03
+
 
 ################################################################################
 # LIBS
 ################################################################################
 
-#
+# OpenMP
 LIBS += -fopenmp
 
 # OpenGL
@@ -33,11 +37,12 @@ LIBS += -lGL -lGLU -lGLEW -lglut
 LIBS += -lOpenCL
 
 # OpenSceneGraph
-LIBS += -losg -losgGA -losgDB -losgViewer -losgQt -losgUtil -losgManipulator
-LIBS += -lOpenThreads
+#LIBS += -losg -losgGA -losgDB -losgViewer -losgQt -losgUtil -losgManipulator
+#LIBS += -lOpenThreads
 
 # CUDA
 LIBS += -L$$CUDA_DIR/lib64 -lcudart -lcuda
+
 
 ################################################################################
 # CUDA
@@ -53,21 +58,21 @@ QMAKE_LIBDIR   += $$CUDA_DIR/lib64
 QMAKE_RPATHDIR += $$CUDA_DIR/lib64
 CUDA_LIBS      += -lcudart -lcuda
 CUDA_INC        = $$join(INCLUDEPATH, ' -I', '-I', ' ')
-CUDA_ARCH       = sm_20
+CUDA_ARCH       = sm_52
 
 # NVCC flags
 NVCCFLAGS = --compiler-options -fno-strict-aliasing -use_fast_math --ptxas-options=-v
 
 # Prepare the extra compiler configuration
 # nvcc error printout format ever so slightly different from gcc
-# http://forums.nvidia.com/index.php?showtopic=171651
 cuda.commands = $$CUDA_DIR/bin/nvcc -m64 -O3 -arch=$$CUDA_ARCH -c $$NVCCFLAGS \
-                $$CUDA_INC $$CUDA_LIBS ${QMAKE_FILE_NAME} -o ${QMAKE_FILE_OUT} \
+                $$CUDA_INC $$CUDA_LIBS  ${QMAKE_FILE_NAME} -o ${QMAKE_FILE_OUT} \
                 2>&1 | sed -r \"s/\\(([0-9]+)\\)/:\\1/g\" 1>&2
 cuda.dependency_type = TYPE_C
-cuda.depend_command = $$CUDA_DIR/bin/nvcc -O3 -M $$CUDA_INC $$NVCCFLAGS ${QMAKE_FILE_NAME}
+cuda.depend_command = $$CUDA_DIR/bin/nvcc -O3 -M $$CUDA_INC $$NVCCFLAGS ${QMAKE_FILE_NAME}| sed \"s/^.*: //\"
 cuda.input = CUDA_SOURCES
-cuda.output = ${OBJECTS_DIR}${QMAKE_FILE_BASE}_cuda.o
+cuda.output = $${OBJECTS_DIR}/${QMAKE_FILE_BASE}$${QMAKE_EXT_OBJ}
+
 
 ################################################################################
 # Soruces
@@ -81,8 +86,10 @@ HEADERS += \
 SOURCES += \
     main.cpp \
     src/TestCUDA.cpp \
+    src/TestCUDADriver.cpp \
     src/TestOpenCL.cpp \
     src/TestOpenGL.cpp
+
 
 ################################################################################
 # CUDA Sources

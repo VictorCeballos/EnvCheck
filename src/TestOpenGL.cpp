@@ -21,7 +21,7 @@ void formatMe(std::string *text)
 
 void consoleMessage()
 {
-    char *versionGL = '\0';
+    char* versionGL = nullptr;
     GLint versionFreeGlutInt = 0;
 
     versionGL = (char *)(glGetString(GL_VERSION));
